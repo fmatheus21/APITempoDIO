@@ -12,16 +12,16 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["APITempoDIO/APITempoDIO.csproj", "APITempoDIO/"]
-RUN dotnet restore "./APITempoDIO/APITempoDIO.csproj"
+COPY ["APITempoDIO.csproj", "./"]
+RUN dotnet restore "APITempoDIO.csproj"
 COPY . .
-WORKDIR "/src/APITempoDIO"
-RUN dotnet build "./APITempoDIO.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src"
+RUN dotnet build "APITempoDIO.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Esta fase é usada para publicar o projeto de serviço a ser copiado para a fase final
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./APITempoDIO.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "APITempoDIO.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
 FROM base AS final
